@@ -1,7 +1,7 @@
 <?php
 
-use App\Areas\Main\Presentation\Http\Controllers\FallbackController;
-use App\Areas\Main\Presentation\Http\Controllers\PersonaFisicaController;
+use App\Areas\Main\Persona\Presentation\Http\Controllers\FallbackController;
+use App\Areas\Main\Persona\Presentation\Http\Controllers\PersonaFisicaController;
 use Illuminate\Support\Facades\Route;
 
 localeRoutes(function () {

@@ -1,8 +1,8 @@
 <?php
 
-use App\Areas\Main\Domain\Entities\CodiceBelfiore;
-use App\Areas\Main\Domain\Entities\PersonaFisica;
-use App\Areas\Main\Infrastructure\Factories\PersonaFisicaFactory;
+use App\Areas\Main\Persona\Domain\Entities\CodiceBelfiore;
+use App\Areas\Main\Persona\Domain\Entities\PersonaFisica;
+use App\Areas\Main\Persona\Infrastructure\Factories\PersonaFisicaFactory;
 
 it('genera una persona fisica valida', function () {
     $factory = new PersonaFisicaFactory();

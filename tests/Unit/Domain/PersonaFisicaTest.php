@@ -1,6 +1,6 @@
 <?php
 
-use App\Areas\Main\Domain\Entities\PersonaFisica;
+use App\Areas\Main\Persona\Domain\Entities\PersonaFisica;
 use Carbon\Carbon;
 
 it('calcola le componenti principali del codice fiscale per un uomo', function () {

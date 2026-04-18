@@ -20,19 +20,19 @@ export const useRoutes = () => {
     const routes = {
         app: {
             home: () => localeRoute('home'),
-            login: () => localeRoute('login'),
-            logout: () => localeRoute('logout'),
-            register: () => localeRoute('register'),
-            user: () => localeRoute('user.show'),
-            collezione: () => localeRoute('collezione'),
+            codiceFiscale: () => localeRoute('codice.fiscale'),
+            // login: () => localeRoute('login'),
+            // logout: () => localeRoute('logout'),
+            // register: () => localeRoute('register'),
+            // user: () => localeRoute('user.show'),
         },
-        admin: {
-            dashboard: () => localeRoute('admin.dashboard'),
-            users: () => localeRoute('admin.users'),
-            user: (id: number) => localeRoute('admin.user.show', {id}),
-            roles: () => localeRoute('admin.roles'),
-            role: (id: number) => localeRoute('admin.role.show', {id}),
-        },
+        // admin: {
+        //     dashboard: () => localeRoute('admin.dashboard'),
+        //     users: () => localeRoute('admin.users'),
+        //     user: (id: number) => localeRoute('admin.user.show', {id}),
+        //     roles: () => localeRoute('admin.roles'),
+        //     role: (id: number) => localeRoute('admin.role.show', {id}),
+        // },
     }
 
     const isActive = (to: string): boolean => {
@@ -49,7 +49,7 @@ export const useRoutes = () => {
         // Se il targetPath è una root ('/' o '/admin'), non fare match parziale
         const roots = [
             normalizzaPath(routes.app.home().replace(window.location.origin, '')),
-            normalizzaPath(routes.admin.dashboard().replace(window.location.origin, '')),
+            // normalizzaPath(routes.admin.dashboard().replace(window.location.origin, '')),
         ];
         if (roots.includes(targetPath)) {
             return false;

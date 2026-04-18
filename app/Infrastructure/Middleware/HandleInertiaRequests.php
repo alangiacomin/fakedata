@@ -2,6 +2,9 @@
 
 namespace App\Infrastructure\Middleware;
 
+use App\Areas\Main\Auth\Application\Data\UserData;
+use App\Areas\Main\Auth\Application\Inertia\AbilityResolver;
+use App\Areas\Main\Auth\Infrastructure\Mappers\UserItemMapper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
@@ -45,6 +48,38 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             //
+            'locale' => $locale,
+            'defaultLocale' => $defaultLocale,
+            'translations' => $this->getTranslations($locale ?? $defaultLocale),
+            'auth' => [
+                'user' => $user ? UserData::from(UserItemMapper::toDomain($user)) : null,
+                'capabilities' => app(AbilityResolver::class)->forUser($user),
+            ],
+            'flash' => [
+                'success' => fn () => $request->hasSession() ? $request->session()->get('success') : null,
+                'error' => fn () => $request->hasSession() ? $request->session()->get('error') : null,
+            ],
         ];
+    }
+
+    /**
+     * Carica tutte le traduzioni per la locale corrente
+     */
+    private function getTranslations(string $locale): array
+    {
+        $langPath = lang_path($locale);
+
+        if (!is_dir($langPath)) {
+            return [];
+        }
+
+        $translations = [];
+
+        foreach (glob("$langPath/*.php") as $file) {
+            $key = basename($file, '.php');
+            $translations[$key] = require $file;
+        }
+
+        return $translations;
     }
 }

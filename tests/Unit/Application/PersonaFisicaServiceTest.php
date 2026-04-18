@@ -1,9 +1,9 @@
 <?php
 
-use App\Areas\Main\Application\Contracts\PersonaFisicaFactoryInterface;
-use App\Areas\Main\Application\Data\PersonaFisicaData;
-use App\Areas\Main\Application\Services\PersonaFisicaService;
-use App\Areas\Main\Domain\Entities\PersonaFisica;
+use App\Areas\Main\Persona\Application\Contracts\PersonaFisicaFactoryInterface;
+use App\Areas\Main\Persona\Application\Data\PersonaFisicaData;
+use App\Areas\Main\Persona\Application\Services\PersonaFisicaService;
+use App\Areas\Main\Persona\Domain\Entities\PersonaFisica;
 use Carbon\Carbon;
 
 afterEach(function () {

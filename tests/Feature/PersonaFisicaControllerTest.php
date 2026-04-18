@@ -1,9 +1,9 @@
 <?php
 
-use App\Areas\Main\Application\Contracts\PersonaFisicaServiceInterface;
-use App\Areas\Main\Application\Data\PersonaFisicaData;
-use App\Areas\Main\Presentation\Http\Controllers\FallbackController;
-use App\Areas\Main\Presentation\Http\Controllers\PersonaFisicaController;
+use App\Areas\Main\Persona\Application\Contracts\PersonaFisicaServiceInterface;
+use App\Areas\Main\Persona\Application\Data\PersonaFisicaData;
+use App\Areas\Main\Persona\Presentation\Http\Controllers\FallbackController;
+use App\Areas\Main\Persona\Presentation\Http\Controllers\PersonaFisicaController;
 use Carbon\Carbon;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 

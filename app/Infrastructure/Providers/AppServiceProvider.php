@@ -2,10 +2,10 @@
 
 namespace App\Infrastructure\Providers;
 
-use App\Areas\Main\Application\Contracts\PersonaFisicaFactoryInterface;
-use App\Areas\Main\Application\Contracts\PersonaFisicaServiceInterface;
-use App\Areas\Main\Application\Services\PersonaFisicaService;
-use App\Areas\Main\Infrastructure\Factories\PersonaFisicaFactory;
+use App\Areas\Main\Persona\Application\Contracts\PersonaFisicaFactoryInterface;
+use App\Areas\Main\Persona\Application\Contracts\PersonaFisicaServiceInterface;
+use App\Areas\Main\Persona\Application\Services\PersonaFisicaService;
+use App\Areas\Main\Persona\Infrastructure\Factories\PersonaFisicaFactory;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
