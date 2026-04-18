@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'browser_title' => 'Home',
+    'head_title' => 'Tieni traccia della tua Collezione',
+    'head_subtitle' => 'L\'applicazione definitiva per i fan di Tex, Diabolik, Zagor e molto altro.',
+    'head_subtitle2' => 'Non un semplice catalogo, ma il tuo diario dei fumetti.',
+    'vai_lista' => 'Vai ai miei fumetti',
+    'inizia_ora' => 'Inizia ora',
+    'scopri' => 'Scopri come funziona',
+    'promo_title' => 'Perché scegliere ComicTracker?',
+    'promo_subtitle' => 'Progettato per i collezionisti più esigenti.',
+    'feat_mancanti_title' => 'Trova i Mancanti',
+    'feat_mancanti_subtitle' => 'Scopri immediatamente quali albi mancano per completare la tua collezione, con segnalazioni automatiche.',
+    'feat_edizioni_title' => 'Edizioni Multiple',
+    'feat_edizioni_subtitle' => 'Distingui tra possesso della storia e possesso della specifica edizione (Inedito, Ristampa, Speciale).',
+    'feat_statistiche_title' => 'Statistiche Dettagliate',
+    'feat_statistiche_subtitle' => 'Visualizza il tuo progresso di completamento con barre di avanzamento e conteggi precisi per ogni testata.',
+
+    'cta_title' => 'Prendi il controllo della tua Collezione',
+    'cta_subtitle' => 'Unisciti a migliaia di appassionati che usano ComicTracker ogni giorno. Ecco perché non potrai più farne a meno:',
+    'cta_stop_dupes_title' => 'Stop acquisti doppi',
+    'cta_stop_dupes_subtitle' => 'Saprai sempre cosa ti manca mentre sei in fumetteria, evitando di comprare albi che hai già.',
+    'cta_stats_title' => 'Statistiche complete',
+    'cta_stats_subtitle' => 'Visualizza in tempo reale la percentuale di completamento di ogni tua serie preferita.',
+    'cta_editions_title' => 'Gestione Edizioni',
+    'cta_editions_subtitle' => 'Distingui con precisione tra inediti, ristampe, variant e volumi unici della tua libreria.',
+    'cta_cloud_title' => 'Dati in Cloud',
+    'cta_cloud_subtitle' => 'La tua lista è sempre sicura e accessibile da qualsiasi smartphone, tablet o PC.',
+    'cta_start_today_title' => 'Inizia oggi stesso',
+    'cta_start_today_subtitle' => 'Crea il tuo account gratuito in pochi secondi e inizia a organizzare i tuoi fumetti come un professionista.',
+    'cta_already_have_account' => 'Hai già un account?',
+];

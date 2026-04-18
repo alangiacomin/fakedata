@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'browser_title' => 'Home',
+    'head_title' => 'Track your Collection',
+    'head_subtitle' => 'The ultimate application for fans of Tex, Diabolik, Zagor and much more.',
+    'head_subtitle2' => 'Not just a catalog, but your comic book diary.',
+    'vai_lista' => 'Go to my comics',
+    'inizia_ora' => 'Start now',
+    'scopri' => 'Discover how it works',
+    'promo_title' => 'Why choose ComicTracker?',
+    'promo_subtitle' => 'Designed for the most demanding collectors.',
+    'feat_mancanti_title' => 'Find the Missing Ones',
+    'feat_mancanti_subtitle' => 'Immediately discover which issues are missing to complete your collection, with automatic notifications.',
+    'feat_edizioni_title' => 'Multiple Editions',
+    'feat_edizioni_subtitle' => 'Distinguish between owning the story and owning the specific edition (Unpublished, Reprint, Special).',
+    'feat_statistiche_title' => 'Detailed Statistics',
+    'feat_statistiche_subtitle' => 'View your completion progress with progress bars and precise counts for each series.',
+
+    'cta_title' => 'Take control of your Collection',
+    'cta_subtitle' => 'Join thousands of fans who use ComicTracker every day. Here is why you won\'t be able to do without it:',
+    'cta_stop_dupes_title' => 'Stop duplicate purchases',
+    'cta_stop_dupes_subtitle' => 'You will always know what you are missing while you are at the comic shop, avoiding buying issues you already have.',
+    'cta_stats_title' => 'Complete Statistics',
+    'cta_stats_subtitle' => 'View in real time the completion percentage of each of your favorite series.',
+    'cta_editions_title' => 'Edition Management',
+    'cta_editions_subtitle' => 'Precisely distinguish between unpublished, reprints, variants and unique volumes in your library.',
+    'cta_cloud_title' => 'Data in Cloud',
+    'cta_cloud_subtitle' => 'Your list is always safe and accessible from any smartphone, tablet or PC.',
+    'cta_start_today_title' => 'Start today',
+    'cta_start_today_subtitle' => 'Create your free account in a few seconds and start organizing your comics like a pro.',
+    'cta_already_have_account' => 'Already have an account?',
+];
