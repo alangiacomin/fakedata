@@ -56,7 +56,7 @@ const CodiceFiscale: FC = (): ReactNode => {
             preserveScroll: true,
             replace: true,
             onSuccess: (page) => {
-                const props = page.props as CodiceFiscalePageProps;
+                const props = page.props;
 
                 if (!props.persona) {
                     setError('Impossibile generare l’anagrafica. Riprova tra poco.');

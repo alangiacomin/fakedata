@@ -1,22 +1,14 @@
-import {FC, ReactNode} from "react";
-import Navbar from "../Navbar/Navbar.tsx";
-import {useRoutes} from "../../../../hooks/useRoutes.ts";
 import {usePage} from "@inertiajs/react";
+import {FC, ReactNode} from "react";
 import {SharedPageProps} from "../../../page.types.ts";
+import DailyMotto from "./DailyMotto.tsx";
+import Navbar from "../Navbar/Navbar.tsx";
 
 type LayoutProps = {
     children: ReactNode;
 }
 const Layout: FC<LayoutProps> = ({children}: LayoutProps): ReactNode => {
-    const routes = useRoutes();
     const {props} = usePage<SharedPageProps>();
-    const currentLocale = props.locale || props.defaultLocale;
-
-    const languages = [
-        {value: '', label: 'IT'},
-        {value: 'en', label: 'EN'},
-        {value: 'fr', label: 'FR'},
-    ];
 
     return (
         <div className="d-flex flex-column min-vh-100">
@@ -24,6 +16,7 @@ const Layout: FC<LayoutProps> = ({children}: LayoutProps): ReactNode => {
             <main className="">
                 {children}
             </main>
+            <DailyMotto motto={props.mottoOfTheDay}/>
 
             <footer className="bg-dark text-white py-4 mt-auto">
                 <div className="container text-center">

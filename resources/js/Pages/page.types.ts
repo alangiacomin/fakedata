@@ -4,6 +4,7 @@ export type SharedPageProps = {
     locales: string[],
     locale: string,
     defaultLocale: string,
+    mottoOfTheDay: string,
     routerSlugs: Record<string, Record<string, string>>,
     auth: {
         user: UserData,

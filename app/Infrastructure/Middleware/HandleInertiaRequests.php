@@ -5,6 +5,7 @@ namespace App\Infrastructure\Middleware;
 use App\Areas\Main\Auth\Application\Data\UserData;
 use App\Areas\Main\Auth\Application\Inertia\AbilityResolver;
 use App\Areas\Main\Auth\Infrastructure\Mappers\UserItemMapper;
+use App\Areas\Main\Motto\Application\Services\RandomMottoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
@@ -52,6 +53,7 @@ class HandleInertiaRequests extends Middleware
             'locale' => $locale,
             'defaultLocale' => $defaultLocale,
             'translations' => $this->getTranslations($locale ?? $defaultLocale),
+            'mottoOfTheDay' => app(RandomMottoService::class)->pick(),
             'auth' => [
                 'user' => $user ? UserData::from(UserItemMapper::toDomain($user)) : null,
                 'capabilities' => app(AbilityResolver::class)->forUser($user),

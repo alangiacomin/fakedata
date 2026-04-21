@@ -2,6 +2,8 @@
 
 namespace App\Infrastructure\Providers;
 
+use App\Areas\Main\Motto\Application\Contracts\MottoCatalogInterface;
+use App\Areas\Main\Motto\Infrastructure\Catalogs\ConfigMottoCatalog;
 use App\Areas\Main\Persona\Application\Contracts\PersonaFisicaFactoryInterface;
 use App\Areas\Main\Persona\Application\Contracts\PersonaFisicaServiceInterface;
 use App\Areas\Main\Persona\Application\Services\PersonaFisicaService;
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(MottoCatalogInterface::class, ConfigMottoCatalog::class);
         $this->app->bind(PersonaFisicaFactoryInterface::class, CodiceFiscaleFactory::class);
         $this->app->bind(PersonaFisicaServiceInterface::class, PersonaFisicaService::class);
     }
