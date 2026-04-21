@@ -9,16 +9,13 @@ use Inertia\ResponseFactory;
 
 class FallbackController extends Controller
 {
+    public function __construct(
+    ) {}
+
     #[Middleware('not_banned')]
     public function app(): Response|ResponseFactory
     {
         return inertia('App/Home/Home');
-    }
-
-    #[Middleware('not_banned')]
-    public function codiceFiscale(): Response|ResponseFactory
-    {
-        return inertia('App/CodiceFiscale/CodiceFiscale');
     }
 
     public function notFound(): Response|ResponseFactory

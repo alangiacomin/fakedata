@@ -7,7 +7,7 @@ use App\Areas\Main\Persona\Domain\Entities\CodiceBelfiore;
 use App\Areas\Main\Persona\Domain\Entities\PersonaFisica;
 use Carbon\Carbon;
 
-class PersonaFisicaFactory implements PersonaFisicaFactoryInterface
+class CodiceFiscaleFactory implements PersonaFisicaFactoryInterface
 {
     public function genera(): PersonaFisica
     {

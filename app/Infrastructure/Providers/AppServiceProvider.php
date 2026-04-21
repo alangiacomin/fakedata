@@ -5,7 +5,7 @@ namespace App\Infrastructure\Providers;
 use App\Areas\Main\Persona\Application\Contracts\PersonaFisicaFactoryInterface;
 use App\Areas\Main\Persona\Application\Contracts\PersonaFisicaServiceInterface;
 use App\Areas\Main\Persona\Application\Services\PersonaFisicaService;
-use App\Areas\Main\Persona\Infrastructure\Factories\PersonaFisicaFactory;
+use App\Areas\Main\Persona\Infrastructure\Factories\CodiceFiscaleFactory;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
@@ -17,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(PersonaFisicaFactoryInterface::class, PersonaFisicaFactory::class);
+        $this->app->bind(PersonaFisicaFactoryInterface::class, CodiceFiscaleFactory::class);
         $this->app->bind(PersonaFisicaServiceInterface::class, PersonaFisicaService::class);
     }
 

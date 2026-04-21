@@ -2,10 +2,10 @@
 
 use App\Areas\Main\Persona\Domain\Entities\CodiceBelfiore;
 use App\Areas\Main\Persona\Domain\Entities\PersonaFisica;
-use App\Areas\Main\Persona\Infrastructure\Factories\PersonaFisicaFactory;
+use App\Areas\Main\Persona\Infrastructure\Factories\CodiceFiscaleFactory;
 
 it('genera una persona fisica valida', function () {
-    $factory = new PersonaFisicaFactory();
+    $factory = new CodiceFiscaleFactory();
     $persona = $factory->genera();
 
     expect($persona)

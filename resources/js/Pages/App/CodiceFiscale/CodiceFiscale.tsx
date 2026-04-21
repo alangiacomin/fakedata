@@ -1,6 +1,9 @@
+import {router, usePage} from "@inertiajs/react";
 import {FC, ReactNode, useMemo, useState} from "react";
 import Page from "../components/Page/Page.tsx";
 import {PersonaFisicaData} from "../../../types/generated";
+import {SharedPageProps} from "../../page.types.ts";
+import {useRoutes} from "../../../hooks/useRoutes.ts";
 
 const emptyPersona: PersonaFisicaData = {
     codiceFiscale: '',
@@ -12,10 +15,16 @@ const emptyPersona: PersonaFisicaData = {
     comuneNascitaDescrizione: '',
 };
 
+type CodiceFiscalePageProps = SharedPageProps & {
+    persona?: PersonaFisicaData | null;
+};
+
 const CodiceFiscale: FC = (): ReactNode => {
-    const [persona, setPersona] = useState<PersonaFisicaData>(emptyPersona);
+    const {app} = useRoutes();
+    const {persona: generatedPersona} = usePage<CodiceFiscalePageProps>().props;
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const persona = generatedPersona ?? emptyPersona;
 
     const dataNascita = useMemo(() => {
         const value = persona.dataNascita?.trim();
@@ -37,28 +46,24 @@ const CodiceFiscale: FC = (): ReactNode => {
         return descrizione || '';
     }, [persona.comuneNascitaDescrizione]);
 
-    const generaAnagrafica = async () => {
+    const generaAnagrafica = () => {
         setIsLoading(true);
         setError(null);
 
-        try {
-            const response = await fetch('/persona-fisica/random', {
-                headers: {
-                    Accept: 'application/json',
-                },
-            });
+        router.get(app.codiceFiscale(), {generate: true}, {
+            only: ['persona'],
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            onSuccess: (page) => {
+                const props = page.props as CodiceFiscalePageProps;
 
-            if (!response.ok) {
-                throw new Error('Errore durante la generazione dell’anagrafica');
-            }
-
-            const data = await response.json() as PersonaFisicaData;
-            setPersona(data);
-        } catch {
-            setError('Impossibile generare l’anagrafica. Riprova tra poco.');
-        } finally {
-            setIsLoading(false);
-        }
+                if (!props.persona) {
+                    setError('Impossibile generare l’anagrafica. Riprova tra poco.');
+                }
+            },
+            onFinish: () => setIsLoading(false),
+        });
     };
 
     return (
@@ -67,7 +72,7 @@ const CodiceFiscale: FC = (): ReactNode => {
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <h1 className="h2 mb-0">Codice fiscale</h1>
                     <button className="btn btn-primary" type="button" onClick={generaAnagrafica} disabled={isLoading}>
-                        {isLoading ? 'Generazione in corso...' : 'Genera anagrafica random'}
+                        Genera anagrafica random
                     </button>
                 </div>
 

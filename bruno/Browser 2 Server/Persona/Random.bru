@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{domain}}/persona-fisica/random
+  url: {{domain}}/persona-fisica/codice-fiscale?generate=true
   body: none
   auth: inherit
+}
+
+params:query {
+  generate: true
 }
 
 body:json {

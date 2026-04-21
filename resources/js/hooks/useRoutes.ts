@@ -6,7 +6,7 @@ export const useRoutes = () => {
     const {url, props} = usePage<SharedPageProps>();
     const {locale, defaultLocale, routerSlugs} = props;
 
-    const normalizzaPath = useCallback((path: string): string => {
+    const normalizzaPath = useCallback((path: string, removeQueryString = false): string => {
         const LOCALES = ['it', 'en'];
         const segments = path.split('/').filter(Boolean);
 
@@ -14,13 +14,20 @@ export const useRoutes = () => {
             segments.shift();
         }
 
-        return '/' + segments.join('/');
+        const normalized = '/' + segments.join('/');
+
+        if (removeQueryString) {
+            const [pathWithoutQuery] = normalized.split('?');
+            return pathWithoutQuery;
+        }
+
+        return normalized;
     }, []);
 
     const routes = {
         app: {
             home: () => localeRoute('home'),
-            codiceFiscale: () => localeRoute('codice.fiscale'),
+            codiceFiscale: () => localeRoute('persona-fisica.codice-fiscale'),
             // login: () => localeRoute('login'),
             // logout: () => localeRoute('logout'),
             // register: () => localeRoute('register'),
@@ -36,10 +43,13 @@ export const useRoutes = () => {
     }
 
     const isActive = (to: string): boolean => {
-        const currentPath = normalizzaPath(url);
+        const currentPath = normalizzaPath(url, true);
         const targetPath = normalizzaPath(
             new URL(to.split('?')[0], window.location.origin).pathname
         );
+
+        console.log("current", currentPath);
+        console.log("target", targetPath);
 
         // Match esatto
         if (currentPath === targetPath) {

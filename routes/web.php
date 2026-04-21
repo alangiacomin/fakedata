@@ -15,6 +15,5 @@ include_once __DIR__.'/web_cfisc.php';
 
 localeRoutes(function () {
     Route::get('/', [FallbackController::class, 'app'])->name('home');
-    Route::get('/codice-fiscale', [FallbackController::class, 'codiceFiscale'])->name('codice.fiscale');
     Route::get('/{any}', [FallbackController::class, 'notFound'])->name('not.found');
 });

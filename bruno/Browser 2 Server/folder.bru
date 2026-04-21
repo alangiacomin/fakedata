@@ -2,6 +2,26 @@ meta {
   name: Browser 2 Server
 }
 
+headers {
+  X-Inertia: true
+  X-Requested-With: XMLHttpRequest
+  Accept: application/json
+  X-Inertia-Version: 2590ae6d740e499f1bd326e4eaed9b88
+}
+
 auth {
   mode: inherit
+}
+
+script:post-response {
+  // Clona opzionale (se non vuoi mutare direttamente res.body)
+  const data = res.body;
+  
+  // Filtra le props rimuovendo le sharedProps
+  data.props = Object.fromEntries(
+    Object.entries(data.props)
+      .filter(([key]) => !data.sharedProps.includes(key))
+  );
+  
+  res.setBody(data);
 }

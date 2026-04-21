@@ -43,6 +43,6 @@ it('restituisce una persona fisica random in formato json dal controller', funct
 });
 
 it('fallback controller ritorna 404', function () {
-    expect(fn () => (new FallbackController())->notFound())
+    expect(fn () => new FallbackController()->notFound())
         ->toThrow(NotFoundHttpException::class);
 });

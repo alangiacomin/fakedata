@@ -25,13 +25,13 @@ class SetLocale
                 abort(404);
             }
 
-            if ($routeLocale) {
-                $this->setLocale($routeLocale);
+            // if ($routeLocale) {
+            $this->setLocale($routeLocale);
 
-                if ($request->route()) {
-                    $request->route()->forgetParameter('locale');
-                }
+            if ($request->route()) {
+                $request->route()->forgetParameter('locale');
             }
+            // }
         }
 
         return $next($request);
