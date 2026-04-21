@@ -48,6 +48,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             //
+            'locales' => config('app.locales'),
             'locale' => $locale,
             'defaultLocale' => $defaultLocale,
             'translations' => $this->getTranslations($locale ?? $defaultLocale),

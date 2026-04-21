@@ -48,9 +48,6 @@ export const useRoutes = () => {
             new URL(to.split('?')[0], window.location.origin).pathname
         );
 
-        console.log("current", currentPath);
-        console.log("target", targetPath);
-
         // Match esatto
         if (currentPath === targetPath) {
             return true;

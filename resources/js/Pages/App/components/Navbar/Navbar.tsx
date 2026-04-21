@@ -29,11 +29,7 @@ const Navbar: FC = (): ReactNode => {
         },
     };
 
-    const locales = [
-        {value: 'it', label: 'Italiano'},
-        {value: 'en', label: 'English'},
-        {value: 'fr', label: 'Français'},
-    ]
+    const locales = props.locales.map((locale) => ({value: locale, label: locale.toUpperCase()}));
 
     const changeLocale = (e: MouseEvent, locale: string) => {
         e.preventDefault();
@@ -57,21 +53,23 @@ const Navbar: FC = (): ReactNode => {
                             );
                         })}
                     </ul>
-                    <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <NavbarDropdown className={'me-3'} label={(
-                            <span className={'text-white'}>
+                    {locales && locales.length > 1 && (
+                        <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+                            <NavbarDropdown className={'me-3'} label={(
+                                <span className={'text-white'}>
                             <i className="bi bi-globe2"></i> {currentLocale.toUpperCase()}
                         </span>
-                        )}>
-                            {locales.map((l, index) => (
-                                <NavbarDropdownItem key={index} to={'#'} onClick={(e) => {
-                                    changeLocale(e, l.value)
-                                }}>
-                                    {l.label} ({l.value.toUpperCase()})
-                                </NavbarDropdownItem>
-                            ))}
-                        </NavbarDropdown>
-                    </ul>
+                            )}>
+                                {locales.map((l, index) => (
+                                    <NavbarDropdownItem key={index} to={'#'} onClick={(e) => {
+                                        changeLocale(e, l.value)
+                                    }}>
+                                        {l.label} ({l.value.toUpperCase()})
+                                    </NavbarDropdownItem>
+                                ))}
+                            </NavbarDropdown>
+                        </ul>
+                    )}
                 </div>
             </div>
         </nav>

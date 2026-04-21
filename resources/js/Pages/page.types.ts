@@ -1,6 +1,7 @@
 import {UserData} from "../types/generated";
 
 export type SharedPageProps = {
+    locales: string[],
     locale: string,
     defaultLocale: string,
     routerSlugs: Record<string, Record<string, string>>,

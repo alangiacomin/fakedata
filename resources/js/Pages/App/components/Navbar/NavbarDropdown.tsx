@@ -1,4 +1,4 @@
-import {FC, ReactNode, useEffect, useRef, useState} from "react";
+import React, {FC, ReactNode, useEffect, useRef, useState} from "react";
 import classNames from "classnames";
 import {Link} from "@inertiajs/react";
 
@@ -8,11 +8,11 @@ type NavbarDropdownProps = {
     children: ReactNode;
 }
 
-const NavbarDropdown: FC<NavbarDropdownProps> = ({label, className, children}: NavbarDropdownProps): ReactNode => {
+const NavbarDropdown: FC<NavbarDropdownProps> = ({label, children}: NavbarDropdownProps): ReactNode => {
     const [isDropOpen, setIsDropOpen] = useState(false);
     const dropRef = useRef<HTMLLIElement | null>(null);
 
-    const toggleDrop = (e: any) => {
+    const toggleDrop = (e: React.MouseEvent) => {
         e.stopPropagation();
         setIsDropOpen(!isDropOpen);
     };
