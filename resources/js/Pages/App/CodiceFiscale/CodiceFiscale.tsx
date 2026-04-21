@@ -1,9 +1,10 @@
-import {router, usePage} from "@inertiajs/react";
+import {usePage} from "@inertiajs/react";
 import {FC, ReactNode, useMemo, useState} from "react";
 import Page from "../components/Page/Page.tsx";
 import {PersonaFisicaData} from "../../../types/generated";
 import {SharedPageProps} from "../../page.types.ts";
 import {useRoutes} from "../../../hooks/useRoutes.ts";
+import useInertia from "../../../hooks/useInertia.ts";
 
 const emptyPersona: PersonaFisicaData = {
     codiceFiscale: '',
@@ -21,6 +22,7 @@ type CodiceFiscalePageProps = SharedPageProps & {
 
 const CodiceFiscale: FC = (): ReactNode => {
     const {app} = useRoutes();
+    const {inertiaRouter} = useInertia();
     const {persona: generatedPersona} = usePage<CodiceFiscalePageProps>().props;
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -50,10 +52,8 @@ const CodiceFiscale: FC = (): ReactNode => {
         setIsLoading(true);
         setError(null);
 
-        router.get(app.codiceFiscale(), {generate: true}, {
+        inertiaRouter.get(app.codiceFiscale(), {generate: true}, {
             only: ['persona'],
-            preserveState: true,
-            preserveScroll: true,
             replace: true,
             onSuccess: (page) => {
                 const props = page.props;

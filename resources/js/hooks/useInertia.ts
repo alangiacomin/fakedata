@@ -19,6 +19,8 @@ export type PageWithFlash<T> = Page & {
     };
 };
 
+const SHARED_PARTIAL_PROPS = ['mottoOfTheDay'] as const;
+
 const useInertia = () => {
     const toast = useToast();
 
@@ -67,9 +69,17 @@ const useInertia = () => {
         }
     };
 
+    const mergeOnlyProps = (only?: string[]) => {
+        if (!only || only.length === 0) {
+            return only;
+        }
+
+        return [...new Set([...only, ...SHARED_PARTIAL_PROPS])];
+    };
+
     // noinspection JSUnusedGlobalSymbols
     const forcedOptions = (options?: OptionsType) => ({
-        // only: options?.only ? [...options.only, 'flash'] : [],
+        only: mergeOnlyProps(options?.only),
         onSuccess: (page: Page) => {
             handleSuccess(page, options?.onSuccess as (flash: unknown) => void);
         },
