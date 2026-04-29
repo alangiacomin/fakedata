@@ -1,0 +1,19 @@
+CHAT AI
+
+Progettiamo la feature Order con Clean Architecture.
+
+L'app usa:
+- Laravel
+- React
+- Inertia
+
+Definisci:
+- entity
+- use case
+- repository interface
+- dto
+- controller
+- pagine React
+
+
+Il risultato poi va usato con JUNIE AGENT per l'implementazione vera e propria.

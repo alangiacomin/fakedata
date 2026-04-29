@@ -1,0 +1,22 @@
+JUINE AGENT (per la prima implementazione)
+
+Implementa caso d'uso CreateOrder:
+- DTO
+- Request validation
+- Controller
+- Repository interface
+- Repository Eloquent
+- UseCase
+
+
+CHAT AI (per integrazioni successive)
+
+Se devi solo:
+* aggiungere un metodo repository
+* modificare un DTO
+* aggiungere validazione
+* cambiare una query
+è meglio usare AI Chat.
+
+Motivo:
+Junie agent rischia di rileggere mezzo progetto → consumando crediti inutilmente.

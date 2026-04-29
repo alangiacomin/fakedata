@@ -1,0 +1,18 @@
+JUINE AGENT
+
+Analizza la richiesta e genera il piano di implementazione senza scrivere codice.
+
+Prima di generarlo verifica che rispetti:
+- Clean Architecture
+- CQRS
+- rules definite nelle instructions
+
+Segnala eventuali problemi architetturali.
+
+
+---
+POI QUANDO DEVI SCRIVERE IL CODICE
+
+Procedi con l'implementazione seguendo il piano definito.
+(oppure)
+Implementa il piano appena definito rispettando le instructions del progetto.

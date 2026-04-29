@@ -5,7 +5,6 @@ namespace App\Areas\Main\Auth\Presentation\Http\Controllers;
 use App\Areas\Main\Auth\Application\Commands\RegisterUserCommand;
 use App\Areas\Main\Auth\Application\Data\UserData;
 use App\Areas\Main\Auth\Domain\Repositories\IUserRepository;
-use App\Areas\Main\Auth\Infrastructure\Mappers\UserItemMapper;
 use App\Areas\Main\Auth\Presentation\Http\Requests\LoginRequest;
 use App\Areas\Main\Auth\Presentation\Http\Requests\RegisterRequest;
 use App\Cqrs\App\Presentation\Http\Controllers\Controller;
@@ -39,7 +38,7 @@ class AuthController extends Controller
     public function userView(): Response|ResponseFactory
     {
         return inertia('App/User/User', [
-            'user' => UserData::From(UserItemMapper::toDomain(Auth::user())),
+            'user' => UserData::fromAuthenticatedUser(Auth::user()),
         ]);
     }
 
@@ -56,7 +55,7 @@ class AuthController extends Controller
         ));
 
         if ($user) {
-            Auth::login(UserItemMapper::toPersistence($userRepository->get($user->id)));
+            Auth::loginUsingId($user->id);
         }
 
         return $this->spaRedirect($this->routeGenerator()->route('verification.notice'));

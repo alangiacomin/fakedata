@@ -1,0 +1,12 @@
+JUINE AGENT
+
+Implementa il dominio Fumetto seguendo Clean Architecture:
+
+- Entity
+- Eloquent Model
+- Migration
+- Factory
+- Seeder
+- Policy
+
+Mantieni separazione tra dominio e infrastruttura.
