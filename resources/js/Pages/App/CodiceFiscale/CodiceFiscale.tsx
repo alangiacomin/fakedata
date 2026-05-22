@@ -1,5 +1,5 @@
 import {usePage} from "@inertiajs/react";
-import {FC, ReactNode, useMemo, useState} from "react";
+import {ChangeEvent, FC, ReactNode, useState} from "react";
 import Page from "../components/Page/Page.tsx";
 import {PersonaFisicaData} from "../../../types/generated";
 import {SharedPageProps} from "../../page.types.ts";
@@ -18,35 +18,91 @@ const emptyPersona: PersonaFisicaData = {
 
 type CodiceFiscalePageProps = SharedPageProps & {
     persona?: PersonaFisicaData | null;
+    luoghiNascitaOptions?: string[];
 };
+
+const formatDateForDisplay = (value?: string | null): string => {
+    const trimmedValue = value?.trim();
+    if (!trimmedValue) {
+        return '';
+    }
+
+    const normalizedValue = trimmedValue.includes('T') ? trimmedValue.split('T')[0] : trimmedValue;
+    const match = normalizedValue.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+    if (match) {
+        return `${match[3]}/${match[2]}/${match[1]}`;
+    }
+
+    return '';
+};
+
+const normalizeDateForInput = (value?: string | null): string => {
+    return formatDateForDisplay(value);
+};
+
+const formatDateInput = (value: string): string => {
+    const digits = value.replace(/\D/g, '').slice(0, 8);
+    const day = digits.slice(0, 2);
+    const month = digits.slice(2, 4);
+    const year = digits.slice(4, 8);
+
+    if (digits.length <= 2) {
+        return day;
+    }
+
+    if (digits.length <= 4) {
+        return `${day}/${month}`;
+    }
+
+    return `${day}/${month}/${year}`;
+};
+
+type PersonaFormState = {
+    cognome: string;
+    nome: string;
+    dataNascita: string;
+    sesso: string;
+    comuneNascitaDescrizione: string;
+};
+
+const toFormState = (persona: PersonaFisicaData): PersonaFormState => ({
+    cognome: (persona.cognome ?? '').toUpperCase(),
+    nome: (persona.nome ?? '').toUpperCase(),
+    dataNascita: normalizeDateForInput(persona.dataNascita),
+    sesso: persona.sesso ?? '',
+    comuneNascitaDescrizione: persona.comuneNascitaDescrizione?.trim() ?? '',
+});
 
 const CodiceFiscale: FC = (): ReactNode => {
     const {app} = useRoutes();
     const {inertiaRouter} = useInertia();
-    const {persona: generatedPersona} = usePage<CodiceFiscalePageProps>().props;
+    const {persona: generatedPersona, luoghiNascitaOptions = []} = usePage<CodiceFiscalePageProps>().props;
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const persona = generatedPersona ?? emptyPersona;
+    const [codiceFiscaleValue, setCodiceFiscaleValue] = useState(persona.codiceFiscale ?? '');
+    const [isCodiceFiscaleCleared, setIsCodiceFiscaleCleared] = useState(false);
+    const [formData, setFormData] = useState<PersonaFormState>(() => toFormState(persona));
 
-    const dataNascita = useMemo(() => {
-        const value = persona.dataNascita?.trim();
-        if (!value) {
-            return '';
-        }
+    const clearCodiceFiscale = () => {
+        setIsCodiceFiscaleCleared(true);
+    };
 
-        const normalizedValue = value.includes('T') ? value.split('T')[0] : value;
-        const match = normalizedValue.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-        if (match) {
-            return `${match[3]}/${match[2]}/${match[1]}`;
-        }
+    const handleTextFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = event.target;
+        const normalizedValue = name === 'dataNascita'
+            ? formatDateInput(value)
+            : (name === 'cognome' || name === 'nome')
+                ? value.toUpperCase()
+                : value;
 
-        return value;
-    }, [persona.dataNascita]);
-
-    const luogoNascita = useMemo(() => {
-        const descrizione = persona.comuneNascitaDescrizione?.trim();
-        return descrizione || '';
-    }, [persona.comuneNascitaDescrizione]);
+        setFormData((prevState) => ({
+            ...prevState,
+            [name]: normalizedValue,
+        }));
+        clearCodiceFiscale();
+    };
 
     const generaAnagrafica = () => {
         setIsLoading(true);
@@ -57,10 +113,41 @@ const CodiceFiscale: FC = (): ReactNode => {
             replace: true,
             onSuccess: (page) => {
                 const props = page.props;
+                const nextPersona = props.persona as PersonaFisicaData | undefined;
 
                 if (!props.persona) {
                     setError('Impossibile generare l’anagrafica. Riprova tra poco.');
+                    return;
                 }
+
+                if (nextPersona) {
+                    setFormData(toFormState(nextPersona));
+                }
+                setCodiceFiscaleValue(nextPersona?.codiceFiscale ?? '');
+                setIsCodiceFiscaleCleared(false);
+            },
+            onFinish: () => setIsLoading(false),
+        });
+    };
+
+    const calcolaCodiceFiscale = () => {
+        setIsLoading(true);
+        setError(null);
+
+        inertiaRouter.post(app.codiceFiscaleCalcola(), formData, {
+            replace: true,
+            onSuccess: (page) => {
+                const props = page.props;
+                const nextPersona = props.persona as PersonaFisicaData | undefined;
+
+                if (!nextPersona) {
+                    setError('Compila tutti i dati per calcolare il codice fiscale.');
+                    return;
+                }
+
+                setFormData(toFormState(nextPersona));
+                setCodiceFiscaleValue(nextPersona.codiceFiscale ?? '');
+                setIsCodiceFiscaleCleared(false);
             },
             onFinish: () => setIsLoading(false),
         });
@@ -83,41 +170,97 @@ const CodiceFiscale: FC = (): ReactNode => {
                     <div className="card-body bg-light">
                         <label className="form-label fw-semibold text-primary">Codice fiscale</label>
                         <input className="form-control form-control-lg fw-semibold text-uppercase text-primary"
-                               value={persona.codiceFiscale} readOnly/>
+                               value={isCodiceFiscaleCleared ? '' : (codiceFiscaleValue || persona.codiceFiscale)}
+                               readOnly/>
                     </div>
                 </div>
 
                 <div className="card">
                     <div className="card-body">
                         <h2 className="h5 mb-3">Dati anagrafici</h2>
-                        <div className="row g-3">
+                        <div
+                            className="row g-3"
+                            key={`${persona.cognome}|${persona.nome}|${persona.dataNascita}|${persona.sesso}|${persona.comuneNascitaDescrizione}`}
+                        >
                             <div className="col-12 col-md-6">
                                 <label className="form-label">Cognome</label>
-                                <input className="form-control" value={persona.cognome} readOnly/>
+                                <input className="form-control" name="cognome" value={formData.cognome}
+                                       onChange={handleTextFieldChange}/>
                             </div>
                             <div className="col-12 col-md-6">
                                 <label className="form-label">Nome</label>
-                                <input className="form-control" value={persona.nome} readOnly/>
+                                <input className="form-control" name="nome" value={formData.nome}
+                                       onChange={handleTextFieldChange}/>
                             </div>
                             <div className="col-12 col-md-6">
                                 <label className="form-label">Data nascita</label>
-                                <input className="form-control" value={dataNascita} readOnly/>
-                            </div>
-                            <div className="col-12 col-md-6">
-                                <label className="form-label">Luogo nascita</label>
-                                <input className="form-control" value={luogoNascita} readOnly/>
+                                <input className="form-control" type="text" placeholder="gg/mm/aaaa"
+                                       name="dataNascita" value={formData.dataNascita}
+                                       onChange={handleTextFieldChange}/>
                             </div>
                             <div className="col-12 col-md-6">
                                 <label className="form-label">Sesso</label>
-                                <input className="form-control" value={persona.sesso} readOnly/>
+                                <div className="d-flex gap-4 mt-1">
+                                    <div className="form-check">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="sesso"
+                                            id="sesso-m"
+                                            value="M"
+                                            checked={formData.sesso === 'M'}
+                                            onChange={handleTextFieldChange}
+                                        />
+                                        <label className="form-check-label" htmlFor="sesso-m">M</label>
+                                    </div>
+                                    <div className="form-check">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="sesso"
+                                            id="sesso-f"
+                                            value="F"
+                                            checked={formData.sesso === 'F'}
+                                            onChange={handleTextFieldChange}
+                                        />
+                                        <label className="form-check-label" htmlFor="sesso-f">F</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-12 col-md-6">
+                                <label className="form-label">Luogo nascita</label>
+                                <div className="position-relative">
+                                    <input
+                                        className="form-control pe-5"
+                                        name="comuneNascitaDescrizione"
+                                        list="luoghi-nascita-list"
+                                        value={formData.comuneNascitaDescrizione}
+                                        onChange={handleTextFieldChange}
+                                    />
+                                    <span
+                                        className="position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
+                                        aria-hidden="true"
+                                    >
+                                        🔍
+                                    </span>
+                                </div>
+                                <datalist id="luoghi-nascita-list">
+                                    {luoghiNascitaOptions.map((luogo) => (
+                                        <option key={luogo} value={luogo}/>
+                                    ))}
+                                </datalist>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-4">
+                <div className="mt-4 d-flex gap-2">
                     <button className="btn btn-primary" type="button" onClick={generaAnagrafica} disabled={isLoading}>
                         Genera anagrafica random
+                    </button>
+                    <button className="btn btn-outline-primary" type="button" onClick={calcolaCodiceFiscale}
+                            disabled={isLoading}>
+                        Calcola da dati inseriti
                     </button>
                 </div>
             </div>

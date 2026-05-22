@@ -28,6 +28,7 @@ export const useRoutes = () => {
         app: {
             home: () => localeRoute('home'),
             codiceFiscale: () => localeRoute('persona-fisica.codice-fiscale'),
+            codiceFiscaleCalcola: () => localeRoute('persona-fisica.codice-fiscale.calcola'),
             // login: () => localeRoute('login'),
             // logout: () => localeRoute('logout'),
             // register: () => localeRoute('register'),

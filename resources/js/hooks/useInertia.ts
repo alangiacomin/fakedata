@@ -78,12 +78,16 @@ const useInertia = () => {
     };
 
     // noinspection JSUnusedGlobalSymbols
-    const forcedOptions = (options?: OptionsType) => ({
-        only: mergeOnlyProps(options?.only),
-        onSuccess: (page: Page) => {
-            handleSuccess(page, options?.onSuccess as (flash: unknown) => void);
-        },
-    });
+    const forcedOptions = (options?: OptionsType) => {
+        const only = mergeOnlyProps(options?.only);
+
+        return {
+            ...(only !== undefined ? {only} : {}),
+            onSuccess: (page: Page) => {
+                handleSuccess(page, options?.onSuccess as (flash: unknown) => void);
+            },
+        };
+    };
 
     const getSuccessData = <T>(pagina: PageWithFlash<T>): T => {
         return pagina.props.flash?.success ?? {} as T;
