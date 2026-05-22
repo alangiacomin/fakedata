@@ -21,6 +21,7 @@ const Layout: FC<LayoutProps> = ({children}: LayoutProps): ReactNode => {
             <footer className="bg-dark text-white py-4 mt-auto">
                 <div className="container text-center">
                     <p className="mb-0">&copy; 2026 Company Inc.</p>
+                    <p className="mb-0 small text-white-50">Made with PHP, logic and no ornamental damage.</p>
                 </div>
             </footer>
         </div>
