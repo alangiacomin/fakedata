@@ -1,5 +1,5 @@
 import {usePage} from "@inertiajs/react";
-import {ChangeEvent, FC, ReactNode, useState} from "react";
+import {ChangeEvent, FC, FocusEvent, KeyboardEvent, ReactNode, useMemo, useState} from "react";
 import Page from "../components/Page/Page.tsx";
 import {PersonaFisicaData} from "../../../types/generated";
 import {SharedPageProps} from "../../page.types.ts";
@@ -20,6 +20,8 @@ type CodiceFiscalePageProps = SharedPageProps & {
     persona?: PersonaFisicaData | null;
     luoghiNascitaOptions?: string[];
 };
+
+const maxLuoghiNascitaSuggestions = 12;
 
 const formatDateForDisplay = (value?: string | null): string => {
     const trimmedValue = value?.trim();
@@ -84,6 +86,35 @@ const CodiceFiscale: FC = (): ReactNode => {
     const [codiceFiscaleValue, setCodiceFiscaleValue] = useState(persona.codiceFiscale ?? '');
     const [isCodiceFiscaleCleared, setIsCodiceFiscaleCleared] = useState(false);
     const [formData, setFormData] = useState<PersonaFormState>(() => toFormState(persona));
+    const [isLuogoNascitaOpen, setIsLuogoNascitaOpen] = useState(false);
+    const [highlightedLuogoNascitaIndex, setHighlightedLuogoNascitaIndex] = useState(0);
+
+    const filteredLuoghiNascita = useMemo(() => {
+        const searchValue = formData.comuneNascitaDescrizione.trim().toLocaleUpperCase('it-IT');
+
+        if (!searchValue) {
+            return luoghiNascitaOptions.slice(0, maxLuoghiNascitaSuggestions);
+        }
+
+        const startsWithMatches: string[] = [];
+        const containsMatches: string[] = [];
+
+        for (const luogo of luoghiNascitaOptions) {
+            const normalizedLuogo = luogo.toLocaleUpperCase('it-IT');
+
+            if (normalizedLuogo.startsWith(searchValue)) {
+                startsWithMatches.push(luogo);
+            } else if (normalizedLuogo.includes(searchValue)) {
+                containsMatches.push(luogo);
+            }
+
+            if (startsWithMatches.length + containsMatches.length >= maxLuoghiNascitaSuggestions) {
+                break;
+            }
+        }
+
+        return [...startsWithMatches, ...containsMatches].slice(0, maxLuoghiNascitaSuggestions);
+    }, [formData.comuneNascitaDescrizione, luoghiNascitaOptions]);
 
     const clearCodiceFiscale = () => {
         setIsCodiceFiscaleCleared(true);
@@ -102,6 +133,68 @@ const CodiceFiscale: FC = (): ReactNode => {
             [name]: normalizedValue,
         }));
         clearCodiceFiscale();
+    };
+
+    const handleLuogoNascitaChange = (event: ChangeEvent<HTMLInputElement>) => {
+        handleTextFieldChange(event);
+        setIsLuogoNascitaOpen(true);
+        setHighlightedLuogoNascitaIndex(0);
+    };
+
+    const selectLuogoNascita = (luogo: string) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            comuneNascitaDescrizione: luogo,
+        }));
+        setIsLuogoNascitaOpen(false);
+        setHighlightedLuogoNascitaIndex(0);
+        clearCodiceFiscale();
+    };
+
+    const handleLuogoNascitaFocus = () => {
+        setIsLuogoNascitaOpen(true);
+    };
+
+    const handleLuogoNascitaBlur = (event: FocusEvent<HTMLDivElement>) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+            setIsLuogoNascitaOpen(false);
+            setHighlightedLuogoNascitaIndex(0);
+        }
+    };
+
+    const handleLuogoNascitaKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (!isLuogoNascitaOpen && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+            setIsLuogoNascitaOpen(true);
+            return;
+        }
+
+        if (!filteredLuoghiNascita.length) {
+            return;
+        }
+
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            setHighlightedLuogoNascitaIndex((currentIndex) => (
+                currentIndex + 1 >= filteredLuoghiNascita.length ? 0 : currentIndex + 1
+            ));
+        }
+
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            setHighlightedLuogoNascitaIndex((currentIndex) => (
+                currentIndex - 1 < 0 ? filteredLuoghiNascita.length - 1 : currentIndex - 1
+            ));
+        }
+
+        if (event.key === 'Enter' && isLuogoNascitaOpen) {
+            event.preventDefault();
+            selectLuogoNascita(filteredLuoghiNascita[highlightedLuogoNascitaIndex]);
+        }
+
+        if (event.key === 'Escape') {
+            setIsLuogoNascitaOpen(false);
+            setHighlightedLuogoNascitaIndex(0);
+        }
     };
 
     const generaAnagrafica = () => {
@@ -229,13 +322,22 @@ const CodiceFiscale: FC = (): ReactNode => {
                             </div>
                             <div className="col-12 col-md-6">
                                 <label className="form-label">Luogo nascita</label>
-                                <div className="position-relative">
+                                <div
+                                    className="position-relative"
+                                    onBlur={handleLuogoNascitaBlur}
+                                >
                                     <input
                                         className="form-control pe-5"
                                         name="comuneNascitaDescrizione"
-                                        list="luoghi-nascita-list"
                                         value={formData.comuneNascitaDescrizione}
-                                        onChange={handleTextFieldChange}
+                                        autoComplete="off"
+                                        role="combobox"
+                                        aria-expanded={isLuogoNascitaOpen}
+                                        aria-controls="luoghi-nascita-list"
+                                        aria-autocomplete="list"
+                                        onChange={handleLuogoNascitaChange}
+                                        onFocus={handleLuogoNascitaFocus}
+                                        onKeyDown={handleLuogoNascitaKeyDown}
                                     />
                                     <span
                                         className="position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
@@ -243,12 +345,31 @@ const CodiceFiscale: FC = (): ReactNode => {
                                     >
                                         🔍
                                     </span>
+                                    {isLuogoNascitaOpen && filteredLuoghiNascita.length > 0 && (
+                                        <div
+                                            id="luoghi-nascita-list"
+                                            className="list-group luogo-nascita-suggestions shadow-sm"
+                                            role="listbox"
+                                        >
+                                            {filteredLuoghiNascita.map((luogo, index) => (
+                                                <button
+                                                    key={luogo}
+                                                    type="button"
+                                                    className={`list-group-item list-group-item-action luogo-nascita-suggestion ${
+                                                        index === highlightedLuogoNascitaIndex ? 'active' : ''
+                                                    }`}
+                                                    role="option"
+                                                    aria-selected={index === highlightedLuogoNascitaIndex}
+                                                    onMouseDown={(event) => event.preventDefault()}
+                                                    onMouseEnter={() => setHighlightedLuogoNascitaIndex(index)}
+                                                    onClick={() => selectLuogoNascita(luogo)}
+                                                >
+                                                    {luogo}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                                <datalist id="luoghi-nascita-list">
-                                    {luoghiNascitaOptions.map((luogo) => (
-                                        <option key={luogo} value={luogo}/>
-                                    ))}
-                                </datalist>
                             </div>
                         </div>
                     </div>
