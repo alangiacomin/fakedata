@@ -69,11 +69,8 @@ const CodiceFiscale: FC = (): ReactNode => {
     return (
         <Page browserTitle={'Codice fiscale'} className={'py-5'}>
             <div className="container">
-                <div className="d-flex justify-content-between align-items-center mb-4">
+                <div className="mb-4">
                     <h1 className="h2 mb-0">Codice fiscale</h1>
-                    <button className="btn btn-primary" type="button" onClick={generaAnagrafica} disabled={isLoading}>
-                        Genera anagrafica random
-                    </button>
                 </div>
 
                 {error && (
@@ -82,17 +79,18 @@ const CodiceFiscale: FC = (): ReactNode => {
                     </div>
                 )}
 
+                <div className="card border-primary mb-4">
+                    <div className="card-body bg-light">
+                        <label className="form-label fw-semibold text-primary">Codice fiscale</label>
+                        <input className="form-control form-control-lg fw-semibold text-uppercase text-primary"
+                               value={persona.codiceFiscale} readOnly/>
+                    </div>
+                </div>
+
                 <div className="card">
                     <div className="card-body">
+                        <h2 className="h5 mb-3">Dati anagrafici</h2>
                         <div className="row g-3">
-                            <div className="col-12 col-md-6">
-                                <label className="form-label">Codice fiscale</label>
-                                <input className="form-control" value={persona.codiceFiscale} readOnly/>
-                            </div>
-                            <div className="col-12 col-md-6">
-                                <label className="form-label">Sesso</label>
-                                <input className="form-control" value={persona.sesso} readOnly/>
-                            </div>
                             <div className="col-12 col-md-6">
                                 <label className="form-label">Cognome</label>
                                 <input className="form-control" value={persona.cognome} readOnly/>
@@ -109,8 +107,18 @@ const CodiceFiscale: FC = (): ReactNode => {
                                 <label className="form-label">Luogo nascita</label>
                                 <input className="form-control" value={luogoNascita} readOnly/>
                             </div>
+                            <div className="col-12 col-md-6">
+                                <label className="form-label">Sesso</label>
+                                <input className="form-control" value={persona.sesso} readOnly/>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <div className="mt-4">
+                    <button className="btn btn-primary" type="button" onClick={generaAnagrafica} disabled={isLoading}>
+                        Genera anagrafica random
+                    </button>
                 </div>
             </div>
         </Page>
