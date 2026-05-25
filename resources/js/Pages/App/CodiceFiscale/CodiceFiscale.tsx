@@ -201,7 +201,7 @@ const CodiceFiscale: FC = (): ReactNode => {
         setIsLoading(true);
         setError(null);
 
-        inertiaRouter.get(app.codiceFiscale(), {generate: true}, {
+        inertiaRouter.post(app.codiceFiscaleGenera(), {}, {
             only: ['persona'],
             replace: true,
             onSuccess: (page) => {

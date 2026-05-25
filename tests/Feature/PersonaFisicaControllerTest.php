@@ -3,11 +3,10 @@
 use App\Areas\Main\Persona\Application\Contracts\PersonaFisicaServiceInterface;
 use App\Areas\Main\Persona\Application\Data\PersonaFisicaData;
 use App\Areas\Main\Persona\Presentation\Http\Controllers\FallbackController;
-use App\Areas\Main\Persona\Presentation\Http\Controllers\PersonaFisicaController;
 use Carbon\Carbon;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-it('restituisce una persona fisica random in formato json dal controller', function () {
+it('genera una persona fisica random e torna indietro con flash data', function () {
     $data = new PersonaFisicaData(
         codiceFiscale: 'RSSMRC85D09H501K',
         cognome: 'Rossi',
@@ -21,25 +20,15 @@ it('restituisce una persona fisica random in formato json dal controller', funct
     $service = Mockery::mock(PersonaFisicaServiceInterface::class);
     $service->shouldReceive('random')->once()->andReturn($data);
 
-    $controller = new PersonaFisicaController($service);
-    $response = $controller->random();
+    $this->app->instance(PersonaFisicaServiceInterface::class, $service);
 
-    expect($response->getStatusCode())->toBe(200);
-
-    $json = $response->getData(true);
-
-    expect($json)
-        ->toHaveKeys([
-            'codiceFiscale',
-            'cognome',
-            'nome',
-            'sesso',
-            'dataNascita',
-            'comuneNascitaCodice',
-            'comuneNascitaDescrizione',
-        ])
-        ->and($json['codiceFiscale'])->toHaveLength(16)
-        ->and($json['sesso'])->toBeIn(['M', 'F']);
+    $this
+        ->withSession(['_token' => 'test-token'])
+        ->from(route('persona-fisica.codice-fiscale'))
+        ->post(route('persona-fisica.codice-fiscale.genera'), ['_token' => 'test-token'])
+        ->assertRedirect(route('persona-fisica.codice-fiscale'))
+        ->assertSessionHas('persona', $data)
+        ->assertSessionHas('success', 'Anagrafica generata correttamente.');
 });
 
 it('fallback controller ritorna 404', function () {

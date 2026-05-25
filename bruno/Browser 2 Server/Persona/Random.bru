@@ -4,14 +4,10 @@ meta {
   seq: 1
 }
 
-get {
-  url: {{domain}}/persona-fisica/codice-fiscale?generate=true
+post {
+  url: {{domain}}/persona-fisica/codice-fiscale/genera
   body: none
   auth: inherit
-}
-
-params:query {
-  generate: true
 }
 
 headers {

@@ -25,14 +25,19 @@ class PersonaFisicaController extends Controller
         $persona = null;
         if ($request->session()->has('persona')) {
             $persona = $request->session()->get('persona');
-        } elseif ($request->boolean('generate')) {
-            $persona = $this->personaFisicaService->random();
         }
 
         return inertia('App/CodiceFiscale/CodiceFiscale', [
             'luoghiNascitaOptions' => LuoghiNascita::all(),
             'persona' => $persona,
         ]);
+    }
+
+    public function generaCodiceFiscale(): RedirectResponse
+    {
+        return back()
+            ->with('persona', $this->personaFisicaService->random())
+            ->with('success', 'Anagrafica generata correttamente.');
     }
 
     public function calcolaCodiceFiscale(CalcolaCodiceFiscaleRequest $request): RedirectResponse
