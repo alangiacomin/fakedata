@@ -376,10 +376,11 @@ const CodiceFiscale: FC = (): ReactNode => {
                 </div>
 
                 <div className="mt-4 d-flex gap-2">
-                    <button className="btn btn-primary" type="button" onClick={generaAnagrafica} disabled={isLoading}>
+                    <button className="btn btn-outline-primary" type="button" onClick={generaAnagrafica}
+                            disabled={isLoading}>
                         Genera anagrafica random
                     </button>
-                    <button className="btn btn-outline-primary" type="button" onClick={calcolaCodiceFiscale}
+                    <button className="btn btn-primary" type="button" onClick={calcolaCodiceFiscale}
                             disabled={isLoading}>
                         Calcola da dati inseriti
                     </button>
