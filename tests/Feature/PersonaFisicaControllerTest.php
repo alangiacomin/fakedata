@@ -31,6 +31,21 @@ it('genera una persona fisica random e torna indietro con flash data', function 
         ->assertSessionHas('success', 'Anagrafica generata correttamente.');
 });
 
+it('restituisce gli errori di validazione quando mancano i dati per il calcolo', function () {
+    $this
+        ->withSession(['_token' => 'test-token'])
+        ->from(route('persona-fisica.codice-fiscale'))
+        ->post(route('persona-fisica.codice-fiscale.calcola'), ['_token' => 'test-token'])
+        ->assertRedirect(route('persona-fisica.codice-fiscale'))
+        ->assertSessionHasErrors([
+            'cognome',
+            'nome',
+            'sesso',
+            'dataNascita',
+            'comuneNascitaDescrizione',
+        ]);
+});
+
 it('fallback controller ritorna 404', function () {
     expect(fn () => new FallbackController()->notFound())
         ->toThrow(NotFoundHttpException::class);

@@ -1,5 +1,5 @@
 import {usePage} from "@inertiajs/react";
-import {ChangeEvent, FC, FocusEvent, KeyboardEvent, ReactNode, useMemo, useState} from "react";
+import {ChangeEvent, FC, FocusEvent, KeyboardEvent, ReactNode, useEffect, useMemo, useRef, useState} from "react";
 import Page from "../components/Page/Page.tsx";
 import {PersonaFisicaData} from "../../../types/generated";
 import {SharedPageProps} from "../../page.types.ts";
@@ -68,6 +68,16 @@ type PersonaFormState = {
     comuneNascitaDescrizione: string;
 };
 
+type PersonaFormErrors = Partial<Record<keyof PersonaFormState, string>>;
+
+const personaFormFields: (keyof PersonaFormState)[] = [
+    'cognome',
+    'nome',
+    'dataNascita',
+    'sesso',
+    'comuneNascitaDescrizione',
+];
+
 const toFormState = (persona: PersonaFisicaData): PersonaFormState => ({
     cognome: (persona.cognome ?? '').toUpperCase(),
     nome: (persona.nome ?? '').toUpperCase(),
@@ -79,15 +89,20 @@ const toFormState = (persona: PersonaFisicaData): PersonaFormState => ({
 const CodiceFiscale: FC = (): ReactNode => {
     const {app} = useRoutes();
     const {inertiaRouter} = useInertia();
-    const {persona: generatedPersona, luoghiNascitaOptions = []} = usePage<CodiceFiscalePageProps>().props;
+    const {
+        errors,
+        persona: generatedPersona,
+        luoghiNascitaOptions = [],
+    } = usePage<CodiceFiscalePageProps>().props;
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const persona = generatedPersona ?? emptyPersona;
+    const formErrors = errors as PersonaFormErrors;
     const [codiceFiscaleValue, setCodiceFiscaleValue] = useState(persona.codiceFiscale ?? '');
     const [isCodiceFiscaleCleared, setIsCodiceFiscaleCleared] = useState(false);
     const [formData, setFormData] = useState<PersonaFormState>(() => toFormState(persona));
     const [isLuogoNascitaOpen, setIsLuogoNascitaOpen] = useState(false);
     const [highlightedLuogoNascitaIndex, setHighlightedLuogoNascitaIndex] = useState(0);
+    const inputRefs = useRef<Partial<Record<keyof PersonaFormState, HTMLInputElement | null>>>({});
 
     const filteredLuoghiNascita = useMemo(() => {
         const searchValue = formData.comuneNascitaDescrizione.trim().toLocaleUpperCase('it-IT');
@@ -115,6 +130,33 @@ const CodiceFiscale: FC = (): ReactNode => {
 
         return [...startsWithMatches, ...containsMatches].slice(0, maxLuoghiNascitaSuggestions);
     }, [formData.comuneNascitaDescrizione, luoghiNascitaOptions]);
+
+    const inputClassName = (field: keyof PersonaFormState, className = 'form-control') => {
+        return `${className}${formErrors[field] ? ' is-invalid' : ''}`;
+    };
+
+    const setFieldRef = (field: keyof PersonaFormState) => (element: HTMLInputElement | null) => {
+        inputRefs.current[field] = element;
+    };
+
+    const fieldError = (field: keyof PersonaFormState) => (
+        <div
+            className={`small mt-1 ${formErrors[field] ? 'text-danger' : 'invisible'}`}
+            style={{minHeight: '1.25rem'}}
+        >
+            {formErrors[field] || 'Errore'}
+        </div>
+    );
+
+    useEffect(() => {
+        const firstInvalidField = personaFormFields.find((field) => formErrors[field]);
+
+        if (!firstInvalidField) {
+            return;
+        }
+
+        inputRefs.current[firstInvalidField]?.focus();
+    }, [errors, formErrors]);
 
     const clearCodiceFiscale = () => {
         setIsCodiceFiscaleCleared(true);
@@ -199,7 +241,6 @@ const CodiceFiscale: FC = (): ReactNode => {
 
     const generaAnagrafica = () => {
         setIsLoading(true);
-        setError(null);
 
         inertiaRouter.post(app.codiceFiscaleGenera(), {}, {
             only: ['persona'],
@@ -209,7 +250,6 @@ const CodiceFiscale: FC = (): ReactNode => {
                 const nextPersona = props.persona as PersonaFisicaData | undefined;
 
                 if (!props.persona) {
-                    setError('Impossibile generare l’anagrafica. Riprova tra poco.');
                     return;
                 }
 
@@ -225,7 +265,6 @@ const CodiceFiscale: FC = (): ReactNode => {
 
     const calcolaCodiceFiscale = () => {
         setIsLoading(true);
-        setError(null);
 
         inertiaRouter.post(app.codiceFiscaleCalcola(), formData, {
             replace: true,
@@ -234,7 +273,6 @@ const CodiceFiscale: FC = (): ReactNode => {
                 const nextPersona = props.persona as PersonaFisicaData | undefined;
 
                 if (!nextPersona) {
-                    setError('Compila tutti i dati per calcolare il codice fiscale.');
                     return;
                 }
 
@@ -252,12 +290,6 @@ const CodiceFiscale: FC = (): ReactNode => {
                 <div className="mb-4">
                     <h1 className="h2 mb-0">Codice fiscale</h1>
                 </div>
-
-                {error && (
-                    <div className="alert alert-danger" role="alert">
-                        {error}
-                    </div>
-                )}
 
                 <div className="card border-primary mb-4">
                     <div className="card-body bg-light">
@@ -277,19 +309,28 @@ const CodiceFiscale: FC = (): ReactNode => {
                         >
                             <div className="col-12 col-md-6">
                                 <label className="form-label">Cognome</label>
-                                <input className="form-control" name="cognome" value={formData.cognome}
+                                <input className={inputClassName('cognome')} name="cognome" value={formData.cognome}
+                                       ref={setFieldRef('cognome')}
+                                       aria-invalid={Boolean(formErrors.cognome)}
                                        onChange={handleTextFieldChange}/>
+                                {fieldError('cognome')}
                             </div>
                             <div className="col-12 col-md-6">
                                 <label className="form-label">Nome</label>
-                                <input className="form-control" name="nome" value={formData.nome}
+                                <input className={inputClassName('nome')} name="nome" value={formData.nome}
+                                       ref={setFieldRef('nome')}
+                                       aria-invalid={Boolean(formErrors.nome)}
                                        onChange={handleTextFieldChange}/>
+                                {fieldError('nome')}
                             </div>
                             <div className="col-12 col-md-6">
                                 <label className="form-label">Data nascita</label>
-                                <input className="form-control" type="text" placeholder="gg/mm/aaaa"
+                                <input className={inputClassName('dataNascita')} type="text" placeholder="gg/mm/aaaa"
                                        name="dataNascita" value={formData.dataNascita}
+                                       ref={setFieldRef('dataNascita')}
+                                       aria-invalid={Boolean(formErrors.dataNascita)}
                                        onChange={handleTextFieldChange}/>
+                                {fieldError('dataNascita')}
                             </div>
                             <div className="col-12 col-md-6">
                                 <label className="form-label">Sesso</label>
@@ -301,7 +342,9 @@ const CodiceFiscale: FC = (): ReactNode => {
                                             name="sesso"
                                             id="sesso-m"
                                             value="M"
+                                            ref={setFieldRef('sesso')}
                                             checked={formData.sesso === 'M'}
+                                            aria-invalid={Boolean(formErrors.sesso)}
                                             onChange={handleTextFieldChange}
                                         />
                                         <label className="form-check-label" htmlFor="sesso-m">M</label>
@@ -314,11 +357,13 @@ const CodiceFiscale: FC = (): ReactNode => {
                                             id="sesso-f"
                                             value="F"
                                             checked={formData.sesso === 'F'}
+                                            aria-invalid={Boolean(formErrors.sesso)}
                                             onChange={handleTextFieldChange}
                                         />
                                         <label className="form-check-label" htmlFor="sesso-f">F</label>
                                     </div>
                                 </div>
+                                {fieldError('sesso')}
                             </div>
                             <div className="col-12 col-md-6">
                                 <label className="form-label">Luogo nascita</label>
@@ -326,25 +371,30 @@ const CodiceFiscale: FC = (): ReactNode => {
                                     className="position-relative"
                                     onBlur={handleLuogoNascitaBlur}
                                 >
-                                    <input
-                                        className="form-control pe-5"
-                                        name="comuneNascitaDescrizione"
-                                        value={formData.comuneNascitaDescrizione}
-                                        autoComplete="off"
-                                        role="combobox"
-                                        aria-expanded={isLuogoNascitaOpen}
-                                        aria-controls="luoghi-nascita-list"
-                                        aria-autocomplete="list"
-                                        onChange={handleLuogoNascitaChange}
-                                        onFocus={handleLuogoNascitaFocus}
-                                        onKeyDown={handleLuogoNascitaKeyDown}
-                                    />
-                                    <span
-                                        className="position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
-                                        aria-hidden="true"
-                                    >
-                                        🔍
-                                    </span>
+                                    <div className="position-relative">
+                                        <input
+                                            className={inputClassName('comuneNascitaDescrizione', 'form-control pe-5')}
+                                            name="comuneNascitaDescrizione"
+                                            value={formData.comuneNascitaDescrizione}
+                                            autoComplete="off"
+                                            ref={setFieldRef('comuneNascitaDescrizione')}
+                                            role="combobox"
+                                            aria-expanded={isLuogoNascitaOpen}
+                                            aria-controls="luoghi-nascita-list"
+                                            aria-autocomplete="list"
+                                            aria-invalid={Boolean(formErrors.comuneNascitaDescrizione)}
+                                            onChange={handleLuogoNascitaChange}
+                                            onFocus={handleLuogoNascitaFocus}
+                                            onKeyDown={handleLuogoNascitaKeyDown}
+                                        />
+                                        <span
+                                            className="position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
+                                            aria-hidden="true"
+                                        >
+                                            🔍
+                                        </span>
+                                    </div>
+                                    {fieldError('comuneNascitaDescrizione')}
                                     {isLuogoNascitaOpen && filteredLuoghiNascita.length > 0 && (
                                         <div
                                             id="luoghi-nascita-list"
